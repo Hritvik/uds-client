@@ -1,0 +1,43 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "uds-client"
+version = "0.1.0"
+description = "Typed async CRUD client for a unified-data-service"
+readme = "README.md"
+requires-python = ">=3.13"
+license = { text = "Proprietary" }
+dependencies = ["httpx>=0.28"]
+
+[project.optional-dependencies]
+dev = ["pytest>=8", "pytest-asyncio>=0.24", "ruff>=0.6", "mypy>=1.11"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/uds_client"]
+
+[tool.pytest.ini_options]
+asyncio_mode = "auto"
+testpaths = ["tests"]
+addopts = "-q"
+
+[tool.ruff]
+line-length = 88
+
+[tool.ruff.lint]
+select = ["E", "F", "UP", "B", "SIM", "RUF", "T20", "C4", "RET", "PIE", "I"]
+# E501 gets its own budget: the formatter already wraps code to 88, so the only
+# lines that can still trip it are the ones it cannot break (URLs, log strings,
+# docstrings).
+[tool.ruff.lint.pycodestyle]
+max-line-length = 120
+
+[tool.ruff.lint.isort]
+known-first-party = ["uds_client"]
+
+[tool.mypy]
+python_version = "3.13"
+strict = true
+warn_unused_ignores = true
+files = ["src", "tests"]
