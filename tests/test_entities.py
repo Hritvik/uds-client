@@ -10,7 +10,7 @@ from datetime import UTC, datetime
 
 import pytest
 
-from uds_client import UDSEntity
+from uds_client import UDSEntity, normalize_id, normalize_timestamp
 from uds_client.errors import UDSPayloadError
 
 
@@ -84,3 +84,36 @@ def test_attribute_reads_arbitrary_fields() -> None:
     entity = UDSEntity.from_record({"id": "a", "weight": 40})
     assert entity.attribute("weight") == 40
     assert entity.attribute("missing", default="fallback") == "fallback"
+
+
+# --- the two rules consumers import directly ----------------------------
+
+
+def test_normalize_id_reads_the_snake_case_field() -> None:
+    assert normalize_id({"id": "a"}) == "a"
+
+
+def test_normalize_id_reads_the_mongo_field() -> None:
+    assert normalize_id({"_id": "a"}) == "a"
+
+
+def test_normalize_id_uses_the_fallback_when_absent() -> None:
+    assert normalize_id({"name": "n"}, fallback="n") == "n"
+
+
+def test_normalize_id_treats_an_empty_id_as_absent() -> None:
+    assert normalize_id({"id": ""}, fallback="n") == "n"
+
+
+def test_normalize_timestamp_maps_none_to_empty_string() -> None:
+    assert normalize_timestamp(None) == ""
+
+
+def test_normalize_timestamp_isoformats_datetimes() -> None:
+    moment = datetime(2026, 1, 2, 3, 4, 5, tzinfo=UTC)
+    assert normalize_timestamp(moment) == moment.isoformat()
+
+
+def test_normalize_timestamp_passes_strings_and_stringifies_numbers() -> None:
+    assert normalize_timestamp("2026-01-01") == "2026-01-01"
+    assert normalize_timestamp(1_767_225_600) == "1767225600"

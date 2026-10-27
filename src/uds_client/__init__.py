@@ -11,7 +11,7 @@ See the README for the error taxonomy and the route templates.
 
 from .client import DEFAULT_TIMEOUT_SECONDS, UDSClient
 from .config import UDSPaths
-from .entities import UDSEntity
+from .entities import UDSEntity, normalize_id, normalize_timestamp
 from .errors import (
     UDSError,
     UDSHTTPError,
@@ -32,6 +32,8 @@ __all__ = [
     "UDSPayloadError",
     "UDSService",
     "UDSTransportError",
+    "normalize_id",
+    "normalize_timestamp",
 ]
 
 __version__ = "0.1.0"
